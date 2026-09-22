@@ -18,3 +18,9 @@ def create_individual():
     individual = [random.uniform(MIN_X, MAX_X),
                   random.uniform(MIN_Y, MAX_Y)]
     return individual
+
+def crossover(parent1, parent2):
+    child = [(parent1[0] + parent2[0]) / 2,
+             (parent1[1] + parent2[1]) / 2]
+    return child
+
