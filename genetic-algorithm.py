@@ -1,3 +1,6 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from math import sin, cos
 import random
 
@@ -101,3 +104,66 @@ def genetic_algorithm():
         population = new_population
 
     return best_ever, best_ever_f, history_best, history_mean
+
+best, best_f, hb, hm = genetic_algorithm()
+
+print(f"Найденная точка: x = {best[0]:.4f}, y = {best[1]:.4f}")
+print(f"Значение функции: f = {best_f:.4f}")
+print(f"Поколений: {len(hb)}")
+
+
+plt.rcParams['font.family'] = 'DejaVu Sans'
+plt.rcParams['axes.unicode_minus'] = False
+
+
+plt.figure(figsize=(11, 5))
+
+plt.plot(hb, label='Лучшее значение в поколении',
+         color='#1f77b4', linewidth=2)
+
+plt.plot(hm, label='Среднее значение по популяции',
+         color='#ff7f0e', linewidth=1.5, alpha=0.75)
+
+plt.axhline(y=-5.9589, color='red', linestyle='--', linewidth=1,
+            label='Теоретический минимум (-5.9589)')
+
+plt.xlabel('Поколение (эпоха)')
+plt.ylabel('f(x, y)')
+plt.title('Сходимость генетического алгоритма по эпохам')
+plt.legend(loc='upper right')
+plt.grid(alpha=0.3)
+plt.tight_layout()
+plt.savefig("convergence.png", dpi=120, bbox_inches='tight')
+plt.close()
+
+fig = plt.figure(figsize=(12, 8))
+ax = fig.add_subplot(111, projection='3d')
+
+xs = np.linspace(MIN_X, MAX_X, 150)
+ys = np.linspace(MIN_Y, MAX_Y, 150)
+X, Y = np.meshgrid(xs, ys)
+Z = np.sin(X) * np.cos(Y) + X
+
+surf = ax.plot_surface(X, Y, Z,
+                       cmap='viridis',
+                       alpha=0.85,
+                       linewidth=0,
+                       antialiased=True,
+                       rstride=2, cstride=2)
+
+ax.scatter(best[0], best[1], best_f,
+           color='red', s=120, edgecolor='black', linewidth=1.2,
+           label=f'Найденный минимум ({best[0]:.2f}; {best[1]:.2f})',
+           zorder=10)
+
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel('f(x, y)')
+ax.set_title('Поверхность f(x, y) = sin(x)·cos(y) + x')
+ax.legend(loc='upper left')
+
+fig.colorbar(surf, shrink=0.55, aspect=15, pad=0.1, label='f(x, y)')
+
+plt.tight_layout()
+plt.savefig("surface_3d.png", dpi=120, bbox_inches='tight')
+plt.close()
